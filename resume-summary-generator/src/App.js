@@ -2,12 +2,17 @@ import React, { useState, useCallback } from 'react';
 import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
 
+
+
+
 function App() {
   const [resumeText, setResumeText] = useState('');
   const [summary, setSummary] = useState('');
   const [status, setStatus] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [fileName, setFileName] = useState('');
+
+
 
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
@@ -46,6 +51,7 @@ function App() {
 
     try {
       let response;
+
       
       if (fileName) {
         // Handle PDF file upload
@@ -53,11 +59,25 @@ function App() {
         const fileInput = document.querySelector('input[type="file"]');
         formData.append('resume', fileInput.files[0]);
         
-        response = await axios.post('/generate-summary', formData);
+        response = await axios.post('http://localhost:3000/generate-summary', formData);
+        /* response = await fetch('http://localhost:3000/generate-summary', {
+          method: 'POST',
+          body: formData
+        }).then(res => res.json()) */
+
       } else {
         // Handle text input
-        response = await axios.post('/generate-summary', { text: resumeText.trim() });
+        response = await axios.post('http://localhost:3000/generate-summary-from-text', { text: resumeText.trim() });
+        /* response = await fetch('http://localhost:3000/generate-summary-from-text', {
+          method: 'POST',
+          body: {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({text: resumeText.trim() })
+          }
+        }).then(res => res.json())*/
       }
+
 
       setSummary(response.data.summary);
       setStatus('Summary generated successfully!');
